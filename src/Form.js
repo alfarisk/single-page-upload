@@ -9,17 +9,29 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
 const theme = createTheme();
+const baseURL = "http://localhost:3000/v1"
 
 export default function Form() {
+  const [post, setPost] = React.useState("handleSubmit");
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const config = {
+      headers: {
+        'Authorization': ``,
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    axios.post(`${baseURL}/administrasi/absensi`, data, config).then((response) => {
+      setPost(response.data);
+    }).catch(error => {
+      console.log(error.response.data)
+      setPost(error.response.data);
+    })
   };
 
   return (
@@ -43,23 +55,13 @@ export default function Form() {
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="photo"
-                  name="photo"
-                  type="file"
-                />
+                <TextField required fullWidth id="image" name="image" type="file" />
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Upload
-            </Button>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Upload</Button>
+            <Typography id="response">
+              {post.message}
+            </Typography>
           </Box>
         </Box>
       </Container>
